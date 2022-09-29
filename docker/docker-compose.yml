@@ -1,0 +1,14 @@
+version: '3.0'
+services:
+  mariadb:
+    image: mariadb:10.9.3-jammy
+    volumes:
+      - "$PWD/initdb:/docker-entrypoint-initdb.d:ro"
+      - "$PWD/datadir:/var/lib/mysql"
+    environment:
+      - MARIADB_DATABASE=imdb
+      - MARIADB_USER=user
+      - MARIADB_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=password
+    ports:
+      - 3306:3306
