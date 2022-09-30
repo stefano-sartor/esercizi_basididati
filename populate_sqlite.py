@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import csv
+import sys
 from pathlib import Path
 
 from imdb import *
@@ -10,64 +11,36 @@ engine = create_engine("sqlite:///database.sqlite", echo=True, future=True)
 Base.metadata.create_all(engine)
 
 
+base_path = Path('data')
 
-path = Path('data')
-
-path_actors = path / 'actors.csv'
-path_directors = path / 'directors.csv'
-path_movies = path / 'movies.csv'
-
-path_roles = path / 'roles.csv'
-path_dir_gen = path / 'directors_generes.csv'
-path_movie_dire = path / 'movies_directors.csv'
-
+entity_list = [
+    (base_path / 'actors.csv',  Actor),
+    (base_path / 'directors.csv', Director),
+    (base_path / 'movies.csv', Movie),
+    (base_path / 'roles.csv', Role),
+    (base_path / 'directors_genres.csv', DirectorsGenres),
+    (base_path / 'movies_directors.csv', MoviesDirectors),
+    (base_path / 'movies_genres.csv', MoviesGenres)]
 
 
-with open(path / 'actors.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    with Session(engine) as session:
-        for row in reader:
-            session.add( Actor(**row))
-        session.commit()
+def populate_table(path, Class):
+    try:
+        with open(path) as csvfile:
+            reader = csv.DictReader(csvfile)
+            with Session(engine) as session:
+                for row in reader:
+                    session.add(Class(**row))
+                session.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
-with open(path / 'directors.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    with Session(engine) as session:
-        for row in reader:
-            session.add( Director(**row))
-        session.commit()
 
-with open(path / 'movies.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    with Session(engine) as session:
-        for row in reader:
-            session.add( Movie(**row))
-        session.commit()
+for path,Class in entity_list:
+    if not populate_table(path,Class):
+        print("'Errore, il programma terminera'")
+        sys.exit(1)
+        
+print("popolazione delle tabelle entita' eseguita con successo")
 
-with open(path / 'roles.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    with Session(engine) as session:
-        for row in reader:
-            session.add( Role(**row))
-        session.commit()
-
-with open(path / 'directors_genres.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    with Session(engine) as session:
-        for row in reader:
-            session.add( DirectorsGenres(**row))
-        session.commit()
-
-with open(path / 'movies_directors.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    with Session(engine) as session:
-        for row in reader:
-            session.add( MoviesDirectors(**row))
-        session.commit()
-
-with open(path / 'movies_genres.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    with Session(engine) as session:
-        for row in reader:
-            session.add( MoviesGenres(**row))
-        session.commit()
