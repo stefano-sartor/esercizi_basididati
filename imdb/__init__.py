@@ -36,7 +36,7 @@ class Movie(Base):
 
     directors = relationship('MoviesDirectors', back_populates='movie')
     genres = relationship('MoviesGenres', back_populates='movie')
-    roles = relationship('Roles', back_populates='movie')
+    roles = relationship('Role', back_populates='movie')
 
 
 class DirectorsGenres(Base):
@@ -76,7 +76,7 @@ class MoviesGenres(Base):
 
 
 
-class Roles(Base):
+class Role(Base):
     __tablename__ = 'roles'
 
     id = Column(Integer, primary_key=True)
@@ -86,5 +86,5 @@ class Roles(Base):
     movie_id     = Column(ForeignKey("movies.id"))
 
     movie = relationship('Movie',back_populates='roles')
-    actor = relationship('Actors',back_populates='roles')
+    actor = relationship('Actor',back_populates='roles')
 
