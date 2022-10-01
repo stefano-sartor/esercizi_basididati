@@ -1,33 +1,31 @@
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import csv
 import sys
 from pathlib import Path
 
-from imdb import *
+import imdb as db
 
-engine = create_engine("sqlite:///database.sqlite", echo=True, future=True)
 
-Base.metadata.create_all(engine)
+db.Base.metadata.create_all(db.engine)
 
 
 base_path = Path('data')
 
 entity_list = [
-    (base_path / 'actors.csv',  Actor),
-    (base_path / 'directors.csv', Director),
-    (base_path / 'movies.csv', Movie),
-    (base_path / 'roles.csv', Role),
-    (base_path / 'directors_genres.csv', DirectorsGenres),
-    (base_path / 'movies_directors.csv', MoviesDirectors),
-    (base_path / 'movies_genres.csv', MoviesGenres)]
+    (base_path / 'actors.csv',  db.Actor),
+    (base_path / 'directors.csv', db.Director),
+    (base_path / 'movies.csv', db.Movie),
+    (base_path / 'roles.csv', db.Role),
+    (base_path / 'directors_genres.csv', db.DirectorsGenres),
+    (base_path / 'movies_directors.csv', db.MoviesDirectors),
+    (base_path / 'movies_genres.csv', db.MoviesGenres)]
 
 
 def populate_table(path, Class):
     try:
         with open(path) as csvfile:
             reader = csv.DictReader(csvfile)
-            with Session(engine) as session:
+            with Session(db.engine) as session:
                 for row in reader:
                     session.add(Class(**row))
                 session.commit()

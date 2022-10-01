@@ -1,8 +1,11 @@
 from sqlalchemy import Column, Float, Integer, String, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import create_engine
 
 # declarative base class
 Base = declarative_base()
+
+engine = create_engine("sqlite:///database.sqlite", echo=True, future=True)
 
 class Actor(Base):
     __tablename__ = 'actors'
